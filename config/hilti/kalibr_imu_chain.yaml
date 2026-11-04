@@ -1,0 +1,79 @@
+%YAML:1.0
+imu0:
+  T_i_b:
+    - - 1.0
+      - 0.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+  # The noise densities of the Allan deviation of the release's 1.5 h recording at rest
+  # (calibration/imu_noise_calibration.bag, largest axis), and three times its bounds on the bias walks.
+  accelerometer_noise_density: 0.00142
+  accelerometer_random_walk: 0.000558
+  gyroscope_noise_density: 0.000244
+  gyroscope_random_walk: 0.0000126
+  model: calibrated
+  rostopic: /alphasense/imu
+  time_offset: 0.0
+  update_rate: 400
+  Tw:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+  R_IMUtoGYRO:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+  Ta:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+  R_IMUtoACC:
+    - - 1.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 1.0
+  Tg:
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 0.0

@@ -1,0 +1,20 @@
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+native/build/
+.pytest_cache/
+
+# Fetched and produced: weights and helpers, datasets, runs (any of them may be a link to another disk).
+thirdparty/da3_weights
+thirdparty/accelerated_features
+thirdparty/py310_extra
+thirdparty/py310_rosbags
+/data
+/runs
+config/custom/
+*.rrd
+
+# The project page (website/, scripts/build_site.py) stays local until the authors publish it.
+website/
+scripts/build_site.py

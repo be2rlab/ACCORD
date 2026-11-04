@@ -1,0 +1,40 @@
+%YAML:1.0
+# Oxford Spires cam0 (front, colour fisheye), from the release's calibration only (source/, verbatim):
+# intrinsics and equidistant distortion of cam0.yaml; T_imu_cam the inverse of cam-lidar-imu.yaml's T_cam0_imu
+# (C_q_CI, C_r_CI); no time offset (the IMU is synchronised with the cameras in hardware).
+cam0:
+  T_imu_cam:
+    - - -0.999962580373083
+      - -0.005310930069498349
+      - 0.00682875357602134
+      - -0.0003561602877797831
+    - - -0.006850187891528376
+      - 0.004028223061081825
+      - -0.9999684236738782
+      - -0.06901176070131088
+    - - 0.005283254627205092
+      - -0.9999777834735964
+      - -0.004064453195332584
+      - 0.004839745946819848
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs:
+    - -0.04114225009462773
+    - -0.002421765984053725
+    - 0.003400355152679783
+    - -0.0018518822347983275
+  distortion_model: equidistant
+  intrinsics:
+    - 698.1692094914263
+    - 698.5147584873237
+    - 712.7646767255006
+    - 560.5751284820508
+  resolution:
+    - 1440
+    - 1080
+  rostopic: /alphasense_driver_ros/cam0
+  timeshift_cam_imu: 0.0

@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "${BASH_SOURCE[0]}")"
+in_image() { scripts/docker.sh "$@"; }
+score() {  # run directory
+  local data; data="data/$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['dataset'])" "$1/run.json")"
+  ACCORD_GPUS=none in_image python3 scripts/score_trajectory.py --run "$1" --data "$data"
+  ACCORD_GPUS=none in_image python3 scripts/score_map.py --run "$1" --data "$data" --force
+}
+view() {
+  local web="${ACCORD_WEB_PORT:-9090}" grpc="${ACCORD_GRPC_PORT:-9876}"
+  local args=(scripts/view_run.py --run "$1" --web-port "$web" --grpc-port "$grpc" "${@:2}")
+  if python3 -c 'import rerun, scipy; assert tuple(map(int, rerun.__version__.split(".")[:2])) >= (0, 23)' 2>/dev/null; then
+    exec python3 "${args[@]}"
+  fi
+  ACCORD_GPUS=none ACCORD_DOCKER_ARGS="-p 127.0.0.1:$web:$web -p 127.0.0.1:$grpc:$grpc" exec scripts/docker.sh python3 "${args[@]}"
+}
+case "${1:-}" in
+  run)
+    seq="${2:?usage: ./accord run SEQUENCE [options of scripts/run.py]}"; shift 2
+    dataset=euroc; out="runs/$seq"; viz=; rest=()
+    while [ $# -gt 0 ]; do
+      case "$1" in
+        --dataset) dataset="$2"; shift 2 ;;
+        --out) out="$2"; shift 2 ;;
+        --viz) viz=1; shift ;;
+        *) rest+=("$1"); shift ;;
+      esac
+    done
+    if [ -n "$viz" ]; then      # the viewer reads what the run writes, from beside it
+      [ ! -e "$out" ] || { echo "$out already exists; give the run another --out" >&2; exit 1; }
+      view "$out" --follow </dev/null &
+      viewer=$!
+      trap 'kill "$viewer" 2>/dev/null || true' EXIT
+    fi
+    in_image python3 scripts/run.py --dataset "$dataset" --data "data/$dataset" --sequence "$seq" --out "$out" ${rest[@]+"${rest[@]}"}
+    ACCORD_GPUS=none in_image python3 scripts/export_map.py --run "$out"
+    score "$out"
+    if [ -n "$viz" ] && kill -0 "$viewer" 2>/dev/null; then
+      echo "The viewer still serves $out at http://localhost:${ACCORD_WEB_PORT:-9090}/?url=rerun%2Bhttp%3A%2F%2F127.0.0.1%3A${ACCORD_GRPC_PORT:-9876}%2Fproxy; interrupt to stop it."
+      wait "$viewer" || true
+    fi
+    ;;
+  view)  view "${2:?usage: ./accord view RUN [options of scripts/view_run.py]}" "${@:3}" ;;
+  map)   ACCORD_GPUS=none in_image python3 scripts/export_map.py --run "${2:?usage: ./accord map RUN}" "${@:3}" ;;
+  score) score "${2:?usage: ./accord score RUN}" ;;
+  test)  ACCORD_GPUS=none in_image python3 -m pytest -q "${@:2}" ;;
+  shell) in_image ;;
+  *) cat >&2 <<'USAGE'
+./accord run SEQUENCE [--dataset euroc|tumvi|ori|hilti|spires|rig_android|rig_iphone|realsense|iphone|custom] [--out RUN] [--viz]
+                     [options of scripts/run.py: --weights, --rate, --set key=value, --poses, --no-map, ...]
+./accord view RUN [options of scripts/view_run.py]
+./accord map RUN [options of scripts/export_map.py]
+./accord score RUN
+./accord test [options of pytest]
+./accord shell
+USAGE
+     exit 1 ;;
+esac

@@ -1,0 +1,22 @@
+%YAML:1.0
+# The iPhone of the phone rig, recorded with Stray Scanner (which does not record the model; not the LiDAR iPhone that ran
+# RTAB-Map), main (wide) camera, as convert_iphone.py --turn 0 writes it: held in landscape with the camera's image
+# upright, so ARKit's 1920x1440 frames are scaled by 1/3 and not turned. Intrinsics: the median of ARKit's per-frame
+# values over the 44,637 frames with images of the first session's eleven walks (vio09 and vio10, left out later, among
+# them; per walk fx 1429.1 to 1438.8 at 1920x1440, 0.7 % apart), scaled; one value for the whole dataset, no per-walk
+# fit. T_imu_cam: the axes of an iPhone's main camera held in landscape, on its IMU, checked against each recording by
+# the converter. The lever arm is not known (zero).
+cam0:
+  T_imu_cam:
+    - [0.0, -1.0, 0.0, 0.0]
+    - [-1.0, 0.0, 0.0, 0.0]
+    - [0.0, 0.0, -1.0, 0.0]
+    - [0.0, 0.0, 0.0, 1.0]
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs: [0.0, 0.0, 0.0, 0.0]
+  distortion_model: radtan
+  intrinsics: [477.6982, 477.6982, 319.1217, 240.5242]
+  resolution: [640, 480]
+  rostopic: /cam0/image_raw
+  timeshift_cam_imu: 0.0

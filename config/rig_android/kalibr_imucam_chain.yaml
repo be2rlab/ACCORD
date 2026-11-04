@@ -1,0 +1,44 @@
+%YAML:1.0
+# Samsung Galaxy Note 9 (SM-N960U1), main camera, 640x480 landscape, as the recorder's converter writes it (to_asl.py).
+# Intrinsics: from the metadata the recorder keeps (focal length 4.30 mm on a 5.645 x 4.234 mm sensor, principal point at
+# the centre), not measured. T_imu_cam: the axes of a phone's main camera on its IMU (config/phone); over the ten usable
+# Note 9 recordings of the first session (vio09 and vio10, left out later, among them), each image pair's rotation from
+# its essential matrix against the gyroscope fits a rotation 1.8 deg from it (median; phone_rig_check.py). The camera's
+# times lag the IMU's by 22 ms there (median, 13 to 29 ms); the converter moves the frames' stamps by it (to_asl.py
+# --shift-ns 22000000), one value for the device, so the shift below stays 0.
+cam0:
+  T_imu_cam:
+    - - 0.0
+      - -1.0
+      - 0.0
+      - 0.0
+    - - -1.0
+      - 0.0
+      - 0.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - -1.0
+      - 0.0
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 1.0
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs:
+    - 0.0
+    - 0.0
+    - 0.0
+    - 0.0
+  distortion_model: radtan
+  intrinsics:
+    - 487.54
+    - 487.54
+    - 320.0
+    - 240.0
+  resolution:
+    - 640
+    - 480
+  rostopic: /cam0/image_raw
+  timeshift_cam_imu: 0.0

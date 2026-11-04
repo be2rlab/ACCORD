@@ -1,0 +1,19 @@
+%YAML:1.0
+# The RealSense colour camera on its IMU, from Kalibr (data/realsense/calib/kalibr_mono_imu_big_board_4-report-imucam.pdf):
+# T_ic (cam0 to imu0), the pinhole-radtan intrinsics, and the time shift (t_imu = t_cam + shift). The resolution is
+# that of the recorded stream (scripts/convert_realsense.py checks it against the bag).
+
+cam0:
+  T_imu_cam: #rotation from camera to IMU R_CtoI, position of camera in IMU p_CinI
+    - [0.99997516, 0.00288112, 0.00643321, 0.03884141]
+    - [-0.00282055, 0.9999518, -0.00940463, 0.00115052]
+    - [-0.00646, 0.00938625, 0.99993508, 0.04856812]
+    - [0.0, 0.0, 0.0, 1.0]
+  cam_overlaps: []
+  camera_model: pinhole
+  distortion_coeffs: [-0.04368961328420961, 0.03452197139668173, -0.0017881595085865176, 4.081468820352151e-05]
+  distortion_model: radtan
+  intrinsics: [627.0351727602929, 626.8159795387368, 645.9537039484667, 352.658127719731] #fu, fv, cu, cv
+  resolution: [1280, 720]
+  rostopic: /camera/camera/color/image_raw
+  timeshift_cam_imu: 0.005068062913549088

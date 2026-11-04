@@ -1,0 +1,366 @@
+{
+ "source": "https://huggingface.co/datasets/Hilti-Research/hilti-slam-challenge-2022",
+ "revision": "e62017f907007fdc5ab8c721842e4ae7359d7f49",
+ "license": "CC BY-NC-SA 3.0",
+ "generated": "2026-10-02 from the Hugging Face API (sizes and LFS sha256)",
+ "priority": {
+  "P0": [
+   "exp14",
+   "exp18"
+  ],
+  "P1": [
+   "exp16",
+   "exp04"
+  ],
+  "P2": [
+   "exp01",
+   "exp07"
+  ]
+ },
+ "sequences": {
+  "exp01": {
+   "name": "exp01_construction_ground_level",
+   "site": "construction_site",
+   "bag": "rosbags/exp01_construction_ground_level.bag",
+   "ground_truth": [
+    "ground_truth/exp01_construction_ground_level.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp02": {
+   "name": "exp02_construction_multilevel",
+   "site": "construction_site",
+   "bag": "rosbags/exp02_construction_multilevel.bag",
+   "ground_truth": [
+    "ground_truth/exp02_construction_multilevel.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp03": {
+   "name": "exp03_construction_stairs",
+   "site": "construction_site",
+   "bag": "rosbags/exp03_construction_stairs.bag",
+   "ground_truth": [
+    "ground_truth/exp03_construction_stairs.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp04": {
+   "name": "exp04_construction_upper_level",
+   "site": "construction_site",
+   "bag": "rosbags/exp04_construction_upper_level.bag",
+   "ground_truth": [
+    "ground_truth/exp04_construction_upper_level.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp05": {
+   "name": "exp05_construction_upper_level_2",
+   "site": "construction_site",
+   "bag": "rosbags/exp05_construction_upper_level_2.bag",
+   "ground_truth": [
+    "ground_truth/exp05_construction_upper_level_2.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp06": {
+   "name": "exp06_construction_upper_level_3",
+   "site": "construction_site",
+   "bag": "rosbags/exp06_construction_upper_level_3.bag",
+   "ground_truth": [
+    "ground_truth/exp06_construction_upper_level_3.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp07": {
+   "name": "exp07_long_corridor",
+   "site": "construction_site",
+   "bag": "rosbags/exp07_long_corridor.bag",
+   "ground_truth": [
+    "ground_truth/exp07_long_corridor.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp09": {
+   "name": "exp09_cupola",
+   "site": "sheldonian",
+   "bag": "rosbags/exp09_cupola.bag",
+   "ground_truth": [
+    "ground_truth/exp09_cupola.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp10": {
+   "name": "exp10_cupola_2",
+   "site": "sheldonian",
+   "bag": "rosbags/exp10_cupola_2.bag",
+   "ground_truth": [
+    "ground_truth/exp10_cupola_2_imu_3dof.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp11": {
+   "name": "exp11_lower_gallery",
+   "site": "sheldonian",
+   "bag": "rosbags/exp11_lower_gallery.bag",
+   "ground_truth": [
+    "ground_truth/exp11_lower_gallery.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp14": {
+   "name": "exp14_basement_2",
+   "site": "sheldonian",
+   "bag": "rosbags/exp14_basement_2.bag",
+   "ground_truth": [
+    "ground_truth/exp14_basement_2_imu.txt",
+    "ground_truth/exp14_basement_2_imu_3dof.txt"
+   ],
+   "dense_6dof": true
+  },
+  "exp15": {
+   "name": "exp15_attic_to_upper_gallery",
+   "site": "sheldonian",
+   "bag": "rosbags/exp15_attic_to_upper_gallery.bag",
+   "ground_truth": [
+    "ground_truth/exp15_attic_to_upper_gallery.txt"
+   ],
+   "dense_6dof": false
+  },
+  "exp16": {
+   "name": "exp16_attic_to_upper_gallery_2",
+   "site": "sheldonian",
+   "bag": "rosbags/exp16_attic_to_upper_gallery_2.bag",
+   "ground_truth": [
+    "ground_truth/exp16_attic_to_upper_gallery_2_imu.txt",
+    "ground_truth/exp16_attic_to_upper_gallery_2_imu_3dof.txt"
+   ],
+   "dense_6dof": true
+  },
+  "exp18": {
+   "name": "exp18_corridor_lower_gallery_2",
+   "site": "sheldonian",
+   "bag": "rosbags/exp18_corridor_lower_gallery_2.bag",
+   "ground_truth": [
+    "ground_truth/exp18_corridor_lower_gallery_2_imu.txt",
+    "ground_truth/exp18_corridor_lower_gallery_2_imu_3dof.txt"
+   ],
+   "dense_6dof": true
+  },
+  "exp21": {
+   "name": "exp21_outside_building",
+   "site": "sheldonian",
+   "bag": "rosbags/exp21_outside_building.bag",
+   "ground_truth": [
+    "ground_truth/exp21_outside_building.txt"
+   ],
+   "dense_6dof": false
+  }
+ },
+ "scans": {
+  "sheldonian": "laser_scans/sheldonian_full.e57",
+  "construction_site": "laser_scans/construction_site_full.e57"
+ },
+ "calibration": [
+  "calibration/calibration_files/april_hilti.yaml",
+  "calibration/calibration_files/calib_3_cam0-1-camchain-imucam.yaml",
+  "calibration/calibration_files/calib_3_cam2-camchain-imucam.yaml",
+  "calibration/calibration_files/calib_3_cam3-camchain-imucam.yaml",
+  "calibration/calibration_files/calib_3_cam4-camchain-imucam.yaml",
+  "calibration/calibration_files/lidar_calibration.yaml"
+ ],
+ "files": {
+  "calibration/april_grid_2500x1500_7x12_15cm.yaml": {
+   "size": 392,
+   "sha256": null
+  },
+  "calibration/board_calibration_sequence.bag": {
+   "size": 6950998004,
+   "sha256": "39351db25d4b80a9df949cf7bbfbf0dd1d7f36dda7abf0c6f4125d27ba6a8f31"
+  },
+  "calibration/calibration_files/april_hilti.yaml": {
+   "size": 392,
+   "sha256": null
+  },
+  "calibration/calibration_files/calib_3_cam0-1-camchain-imucam.yaml": {
+   "size": 1971,
+   "sha256": null
+  },
+  "calibration/calibration_files/calib_3_cam2-camchain-imucam.yaml": {
+   "size": 804,
+   "sha256": null
+  },
+  "calibration/calibration_files/calib_3_cam3-camchain-imucam.yaml": {
+   "size": 797,
+   "sha256": null
+  },
+  "calibration/calibration_files/calib_3_cam4-camchain-imucam.yaml": {
+   "size": 799,
+   "sha256": null
+  },
+  "calibration/calibration_files/lidar_calibration.yaml": {
+   "size": 747,
+   "sha256": null
+  },
+  "calibration/imu_noise_calibration.bag": {
+   "size": 138287461,
+   "sha256": "48f6b222568dc90a87db1e48fccfe94640b0c51a34c9be77ebf3ece770254c33"
+  },
+  "ground_truth/exp01_construction_ground_level.txt": {
+   "size": 731,
+   "sha256": null
+  },
+  "ground_truth/exp02_construction_multilevel.txt": {
+   "size": 1233,
+   "sha256": null
+  },
+  "ground_truth/exp03_construction_stairs.txt": {
+   "size": 941,
+   "sha256": null
+  },
+  "ground_truth/exp04_construction_upper_level.txt": {
+   "size": 428,
+   "sha256": null
+  },
+  "ground_truth/exp05_construction_upper_level_2.txt": {
+   "size": 373,
+   "sha256": null
+  },
+  "ground_truth/exp06_construction_upper_level_3.txt": {
+   "size": 428,
+   "sha256": null
+  },
+  "ground_truth/exp07_long_corridor.txt": {
+   "size": 388,
+   "sha256": null
+  },
+  "ground_truth/exp09_cupola.txt": {
+   "size": 886,
+   "sha256": null
+  },
+  "ground_truth/exp10_cupola_2_imu_3dof.txt": {
+   "size": 810,
+   "sha256": null
+  },
+  "ground_truth/exp11_lower_gallery.txt": {
+   "size": 303,
+   "sha256": null
+  },
+  "ground_truth/exp14_basement_2_imu.txt": {
+   "size": 78222,
+   "sha256": null
+  },
+  "ground_truth/exp14_basement_2_imu_3dof.txt": {
+   "size": 238,
+   "sha256": null
+  },
+  "ground_truth/exp15_attic_to_upper_gallery.txt": {
+   "size": 536,
+   "sha256": null
+  },
+  "ground_truth/exp16_attic_to_upper_gallery_2_imu.txt": {
+   "size": 222627,
+   "sha256": null
+  },
+  "ground_truth/exp16_attic_to_upper_gallery_2_imu_3dof.txt": {
+   "size": 541,
+   "sha256": null
+  },
+  "ground_truth/exp18_corridor_lower_gallery_2_imu.txt": {
+   "size": 88743,
+   "sha256": null
+  },
+  "ground_truth/exp18_corridor_lower_gallery_2_imu_3dof.txt": {
+   "size": 185,
+   "sha256": null
+  },
+  "ground_truth/exp21_outside_building.txt": {
+   "size": 314,
+   "sha256": null
+  },
+  "ground_truth/exp23_the_sheldonian_slam_imu_3dof.txt": {
+   "size": 1003,
+   "sha256": null
+  },
+  "laser_scans/construction_site_full.e57": {
+   "size": 828148736,
+   "sha256": "1239ad959319ebe3d02bab4e7270d426c9f129f82af7d580647d971fac624a58"
+  },
+  "laser_scans/sheldonian_full.e57": {
+   "size": 5447128064,
+   "sha256": "46575d3eaf3169a24e24ba0013cc48610125ac842d6745e5e8156c6aecc59756"
+  },
+  "rosbags/exp01_construction_ground_level.bag": {
+   "size": 18497392695,
+   "sha256": "7dcaca33e17b4963ec20279f2e1a39722154070465ea406d26796cbf48e5be9c"
+  },
+  "rosbags/exp02_construction_multilevel.bag": {
+   "size": 35358555915,
+   "sha256": "e2c05e0dac389686363755370ead3fe727080195ad0b7976a7515fde9a054750"
+  },
+  "rosbags/exp03_construction_stairs.bag": {
+   "size": 21915037983,
+   "sha256": "205d392d8ceab44af061905c33686ed07a8d225c3964da9b7b32c024ff866163"
+  },
+  "rosbags/exp04_construction_upper_level.bag": {
+   "size": 10469762246,
+   "sha256": "c650f16f30744d2edff15dcd722a7f21ae0f8868809a3c8863cedd0fc5108799"
+  },
+  "rosbags/exp05_construction_upper_level_2.bag": {
+   "size": 10311807906,
+   "sha256": "b1f886ca4876664236e34a69ec83ebd9a48190190a9758431c4940a7bad6bbb2"
+  },
+  "rosbags/exp06_construction_upper_level_3.bag": {
+   "size": 12535443209,
+   "sha256": "e9b8ca34a1e9dd1b4fff53357989141b9ef2af67ee115d9c6351aa72519d8b80"
+  },
+  "rosbags/exp07_long_corridor.bag": {
+   "size": 11496012760,
+   "sha256": "afdcb7e779ed15d2fb7ea9bcc2175f8dd1f39d1fd3246a543dda61993bb2f50b"
+  },
+  "rosbags/exp09_cupola.bag": {
+   "size": 34069990788,
+   "sha256": "519b56325cd2e6ec0310ff98498ad7f0f49dc393423c697a737a1273f5dd813a"
+  },
+  "rosbags/exp10_cupola_2.bag": {
+   "size": 28346664405,
+   "sha256": "54273d515abae4299a0818fc5716d03e3259fcf137d98347f980092e06f3013e"
+  },
+  "rosbags/exp11_lower_gallery.bag": {
+   "size": 12467443010,
+   "sha256": "61067f1bd52146d16a052503e8e430d08a90826f733045ad0df03811801431a2"
+  },
+  "rosbags/exp14_basement_2.bag": {
+   "size": 6260771085,
+   "sha256": "18eea013076b8263ababf4f36eb68d331564a0a493262b006dc0dddc2aa85b82"
+  },
+  "rosbags/exp15_attic_to_upper_gallery.bag": {
+   "size": 20302484455,
+   "sha256": "3489d7983699773c920d4680f192462d177b9957814c66c79a8d1237bf1ae84d"
+  },
+  "rosbags/exp16_attic_to_upper_gallery_2.bag": {
+   "size": 15523312816,
+   "sha256": "e340d874f0836f1637bfbc38b91216eadc18fd6c39fb5e83676a7b295dfcad80"
+  },
+  "rosbags/exp18_corridor_lower_gallery_2.bag": {
+   "size": 8657654860,
+   "sha256": "98373b52f207b9ace3914792b5604a6642f89441190cabca6acbaf1d17249280"
+  },
+  "rosbags/exp21_outside_building.bag": {
+   "size": 12014463331,
+   "sha256": "dd96adebdce2868d37875dafaf7fbca37bf1fa1800de0bc49ec622c6a771bf32"
+  },
+  "rosbags/exp23_the_sheldonian_slam_part_0.bag": {
+   "size": 25303013146,
+   "sha256": "e60f4ef3a7fdb755a5897c932f8f02118880a0c04e5f84cbded2daede292551b"
+  },
+  "rosbags/exp23_the_sheldonian_slam_part_1.bag": {
+   "size": 26387499714,
+   "sha256": "65df51057327e2b2e08c937547d4fb9ccce5e221418249faba506afa305fa5ec"
+  },
+  "rosbags/exp23_the_sheldonian_slam_part_2.bag": {
+   "size": 25978074105,
+   "sha256": "62d6fc80f8485958a99a62282ed20c85cdb6e9a5595694a0dae17bf870fe7c69"
+  }
+ }
+}

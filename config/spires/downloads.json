@@ -1,0 +1,96 @@
+{
+ "source": "https://huggingface.co/datasets/ori-drs/oxford_spires_dataset",
+ "revision": "03f4382308333aa70c3253f12acd3fbf0c7c4a15",
+ "license": "CC BY-NC-SA 4.0",
+ "generated": "2026-10-21 from the Hugging Face API at the revision (sizes; sha256 of the LFS files)",
+ "sequences": {
+  "cc02": {
+   "name": "2024-03-18-christ-church-02",
+   "site": "christ-church",
+   "images": "sequences/2024-03-18-christ-church-02/raw/images.zip",
+   "imu": "sequences/2024-03-18-christ-church-02/raw/imu.csv",
+   "ground_truth": "sequences/2024-03-18-christ-church-02/processed/trajectory/gt-tum.txt"
+  },
+  "cc03": {
+   "name": "2024-03-18-christ-church-03",
+   "site": "christ-church",
+   "images": "sequences/2024-03-18-christ-church-03/raw/images.zip",
+   "imu": "sequences/2024-03-18-christ-church-03/raw/imu.csv",
+   "ground_truth": "sequences/2024-03-18-christ-church-03/processed/trajectory/gt-tum.txt"
+  },
+  "cc05": {
+   "name": "2024-03-20-christ-church-05",
+   "site": "christ-church",
+   "images": "sequences/2024-03-20-christ-church-05/raw/images.zip",
+   "imu": "sequences/2024-03-20-christ-church-05/raw/imu.csv",
+   "ground_truth": "sequences/2024-03-20-christ-church-05/processed/trajectory/gt-tum.txt"
+  }
+ },
+ "scans": {
+  "christ-church": "ground_truth_map/christ-church/merged-cloud-1cm.pcd"
+ },
+ "calibration": [
+  "calibration/README.md",
+  "calibration/cam0.yaml",
+  "calibration/cam-lidar-imu.yaml",
+  "calibration/imu.yaml"
+ ],
+ "files": {
+  "calibration/README.md": {
+   "size": 2523,
+   "git_oid": "4d1c2a62d84df3d736e6a4586e763eb24c5022de"
+  },
+  "calibration/cam0.yaml": {
+   "size": 715,
+   "git_oid": "8d3807f3072c6df9a33f5b60de982f6c678b1680"
+  },
+  "calibration/cam-lidar-imu.yaml": {
+   "size": 1820,
+   "git_oid": "b4986fd6ea8a10dccc1ddcc8848701c7dd2ad322"
+  },
+  "calibration/imu.yaml": {
+   "size": 338,
+   "git_oid": "6d8bcf383b9de07de5010030db470716bcbec7e8"
+  },
+  "ground_truth_map/christ-church/merged-cloud-1cm.pcd": {
+   "size": 2735906782,
+   "sha256": "0da1757d9bec20c79fa6f0698956ba6a5be988fb5b2f6fc51bcd2ada413c2f0b"
+  },
+  "sequences/2024-03-18-christ-church-02/raw/images.zip": {
+   "size": 10837829831,
+   "sha256": "5357b9c4ce21e9fd986714f8709b51f36ca16248a55a25a5d270324c7ca71aa9"
+  },
+  "sequences/2024-03-18-christ-church-02/raw/imu.csv": {
+   "size": 32256369,
+   "sha256": "c9dba444e030ea81ce39aadb7c1ac84beda1e1eb0781bd9897cd306a51c072ac"
+  },
+  "sequences/2024-03-18-christ-church-02/processed/trajectory/gt-tum.txt": {
+   "size": 2240218,
+   "git_oid": "d40324103cd5034094677af1e1e29fefc4dba581"
+  },
+  "sequences/2024-03-18-christ-church-03/raw/images.zip": {
+   "size": 4612829677,
+   "sha256": "1f557704a94f04c0cf1a5c4325e017e5c4fd149a8af85e44e38c9b5db8233de9"
+  },
+  "sequences/2024-03-18-christ-church-03/raw/imu.csv": {
+   "size": 16967427,
+   "sha256": "25dc418507cba99531d850503850b60ebd68f3f56733551af9c149cb6d627f90"
+  },
+  "sequences/2024-03-18-christ-church-03/processed/trajectory/gt-tum.txt": {
+   "size": 1236394,
+   "git_oid": "5f909822c3aec0957e22db21ae2a09f4fd31fdb9"
+  },
+  "sequences/2024-03-20-christ-church-05/raw/images.zip": {
+   "size": 3179571508,
+   "sha256": "10ff8d9320f6192241b44c3bc36d2f73ad027e51e823f8266c6d5f4106e847cc"
+  },
+  "sequences/2024-03-20-christ-church-05/raw/imu.csv": {
+   "size": 43434254,
+   "sha256": "7b96fe0a421c12aefe00aa56036f434bb915f13c9f9ef3e2f1d52b5e1847945f"
+  },
+  "sequences/2024-03-20-christ-church-05/processed/trajectory/gt-tum.txt": {
+   "size": 1785838,
+   "git_oid": "b0e503f14359ebfc83999afd826606dd290d8859"
+  }
+ }
+}
