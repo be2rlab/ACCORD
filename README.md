@@ -5,7 +5,7 @@ Dense metric mapping from one camera and an IMU, online, with loop closure. An O
 ## Quick start
 
 ```bash
-git clone --recursive <this repository> accord && cd accord
+git clone --recursive https://github.com/be2rlab/ACCORD.git && cd ACCORD
 make setup                         # once, about an hour: the image, OpenVINS, its binding, DA3-Base, XFeat
 make euroc SEQS=V1_01_easy         # one EuRoC room
 ./accord run V1_01_easy --viz      # live, with the viewer; then the map is exported and scored
