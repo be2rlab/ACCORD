@@ -6,7 +6,7 @@ Dense metric mapping from one camera and an IMU, online, with loop closure. An O
 
 ```bash
 git clone --recursive https://github.com/be2rlab/ACCORD.git && cd ACCORD
-make setup                         # once, about an hour: the image, OpenVINS, its binding, DA3-Base, XFeat
+make setup                         # once, about an hour: the image, OpenVINS, its binding, DA3-Giant, XFeat
 make euroc SEQS=V1_01_easy         # one EuRoC room
 ./accord run V1_01_easy --viz      # live, with the viewer; then the map is exported and scored
 ```
@@ -22,8 +22,8 @@ Nothing else is installed on the host: everything runs in the image.
 
 ```bash
 git clone --recursive https://github.com/be2rlab/ACCORD.git && cd ACCORD
-make setup                      # image, OpenVINS, its Python binding, DA3-Base weights, XFeat (about an hour, once)
-make weights MODEL=giant        # the paper's model (also: large), from Hugging Face
+make setup                      # image, OpenVINS, its Python binding, DA3-Giant weights, XFeat (about an hour, once)
+make weights MODEL=base         # a smaller model for a smaller GPU (Default Giant)
 ```
 
 ## Data
@@ -63,9 +63,10 @@ viewer beside the run: open http://localhost:9090/?url=rerun%2Bhttp%3A%2F%2F127.
 ./accord run NAME --dataset custom --viz                        # your own recording
 ```
 
-Add `--weights thirdparty/da3_weights/giant` for the paper's model, `--set mapping.online_correction=true` to correct the
-map while it is built, `--out RUN` to choose the run directory (default `runs/SEQ`). Every option is in
-`python3 scripts/run.py --help`; every setting in [config/accord.yaml](config/accord.yaml).
+The depth model is the paper's, DA3-Giant; add `--weights thirdparty/da3_weights/base` for DA3-Base,
+`--set mapping.online_correction=true` to correct the map while it is built, `--out RUN` to choose the run directory
+(default `runs/SEQ`). Every option is in `python3 scripts/run.py --help`; every setting in
+[config/accord.yaml](config/accord.yaml).
 
 ```bash
 ./accord view runs/V1_01_easy                     # a finished run, or one still running
@@ -83,7 +84,7 @@ map while it is built, `--out RUN` to choose the run directory (default `runs/SE
 ## Reproducing the paper
 
 The paper's runs use [config/accord.yaml](config/accord.yaml) and the rig files of `config/` as they are, with DA3-Giant
-(`make weights MODEL=giant`). Beyond them a run is given:
+(the default, which `make setup` fetches). Beyond them a run is given:
 
 - `--weights thirdparty/da3_weights/giant`, on every dataset; ORI also `--rate 0.3` (its two-megapixel frames);
 - nothing per sequence. The update at rest is on for Hilti-Oxford only (`standstill.rigs`), chosen on its development
@@ -110,4 +111,5 @@ timing, so a rerun differs a little from the paper's.
 
 ## Licence
 
-GPL-3.0, as OpenVINS. The Depth Anything 3 weights have their own: base is Apache-2.0; large and giant are CC BY-NC 4.0.
+GPL-3.0, as OpenVINS. The Depth Anything 3 weights have their own: base is Apache-2.0; large and giant, the default, are CC BY-NC
+4.0 (non-commercial).

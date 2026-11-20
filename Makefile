@@ -29,7 +29,7 @@ openvins:
 binding:
 	scripts/docker.sh native/build.sh
 
-MODEL ?= base
+MODEL ?= giant
 weights:
 	scripts/fetch_da3_weights.sh $(MODEL)
 
@@ -38,7 +38,7 @@ xfeat:
 
 euroc: SEQS ?= V1_01_easy V1_02_medium
 euroc:
-	scripts/fetch_euroc.sh $(DATA) $(SEQS)
+	python3 scripts/fetch_euroc.py --data-root $(DATA) --sequences $(SEQS)
 
 tumvi: SEQS ?= room1
 tumvi:
