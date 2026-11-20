@@ -1,3 +1,4 @@
+import io
 import json
 from pathlib import Path
 import shutil
@@ -182,6 +183,83 @@ def test_an_incomplete_or_unsafe_ori_archive_leaves_nothing_behind(script, tmp_p
     with pytest.raises(ValueError):
         fetch.extract(tmp_path / 'r01.zip', tmp_path / 'r01', 'r01', {})
     assert not (tmp_path / 'r01').exists()
+
+
+# ---- fetch_euroc.py ----
+
+@pytest.fixture
+def vicon_room1(script, euroc, tmp_path, monkeypatch):
+    """The release's archive of the first Vicon room as ETH packs it, a ROS bag and an ASL zip per sequence, served by
+    HTTP range from memory: the fetcher, the archive's bytes and the ranges asked for."""
+    archive = io.BytesIO()
+    with zipfile.ZipFile(archive, 'w', zipfile.ZIP_DEFLATED) as bundle:
+        for seq in ('V1_01_easy', 'V1_02_medium'):
+            sequence = euroc(seq=seq, frames=5) / seq
+            asl = io.BytesIO()
+            with zipfile.ZipFile(asl, 'w') as inner:
+                for path in sorted(p for p in sequence.rglob('*') if p.is_file()):
+                    inner.write(path, path.relative_to(sequence).as_posix())
+            bundle.writestr(f'vicon_room1/{seq}/{seq}.bag', np.random.default_rng(0).bytes(200_000))
+            bundle.writestr(f'vicon_room1/{seq}/{seq}.zip', asl.getvalue())
+            shutil.rmtree(sequence)
+    blob, asked = archive.getvalue(), []
+
+    def open_range(url, start, end):
+        asked.append((start, end))
+        return io.BytesIO(blob[start:end + 1]), len(blob)
+    fetch = script('fetch_euroc')
+    monkeypatch.setattr(fetch, 'open_range', open_range)
+    monkeypatch.setattr(fetch, 'require_space', lambda path, size: None)      # whatever the disk of this machine holds
+    return fetch, blob, asked
+
+
+def member_data(blob, name):
+    """Where a member's bytes start in the archive, and how many there are (this writer puts no extra field)."""
+    info = zipfile.ZipFile(io.BytesIO(blob)).getinfo(name)
+    return info.header_offset + 30 + len(name.encode()), info.compress_size
+
+
+def test_a_euroc_sequence_is_fetched_alone_to_where_the_dataset_reader_looks(vicon_room1, tmp_path):
+    from accord.datasets import Euroc
+    fetch, blob, asked = vicon_room1
+    assert fetch.main(['--data-root', str(tmp_path / 'data'), '--sequences', 'V1_01_easy']) == 0
+    sequence = Euroc(tmp_path / 'data/euroc', 'V1_01_easy')      # data/euroc/V1_01_easy/mav0, what ./accord run reads
+    assert len(sequence.image_stamps()) == 5 and len(sequence.imu()) == 60
+    assert [p.name for p in (tmp_path / 'data/euroc').iterdir() if not p.name.startswith('.')] == ['V1_01_easy']
+    assert sum(end + 1 - start for start, end in asked) < 100_000      # neither bag, nor the other sequence
+
+
+def test_a_corrupted_euroc_transfer_leaves_no_sequence_behind(vicon_room1, tmp_path, monkeypatch):
+    fetch, blob, _ = vicon_room1
+    start, size = member_data(blob, 'vicon_room1/V1_01_easy/V1_01_easy.zip')
+    broken = bytearray(blob)
+    broken[start + size // 2] ^= 0xFF
+    monkeypatch.setattr(fetch, 'open_range', lambda url, a, b: (io.BytesIO(bytes(broken[a:b + 1])), len(broken)))
+    with pytest.raises(ValueError):
+        fetch.main(['--data-root', str(tmp_path / 'data'), '--sequences', 'V1_01_easy'])
+    assert not (tmp_path / 'data/euroc/V1_01_easy').exists()
+
+
+def test_an_interrupted_euroc_transfer_resumes_where_it_stopped(vicon_room1, tmp_path):
+    fetch, blob, asked = vicon_room1
+    start, size = member_data(blob, 'vicon_room1/V1_01_easy/V1_01_easy.zip')
+    cache = tmp_path / 'data/euroc/.download_cache'
+    cache.mkdir(parents=True)
+    (cache / 'V1_01_easy.zip.deflated.part').write_bytes(blob[start:start + size // 3])
+    assert fetch.main(['--data-root', str(tmp_path / 'data'), '--sequences', 'V1_01_easy']) == 0
+    assert (start + size // 3, start + size - 1) in asked
+    assert (tmp_path / 'data/euroc/V1_01_easy/mav0/imu0/data.csv').is_file()
+
+
+def test_a_sequence_the_former_fetcher_left_under_its_room_is_moved_without_a_transfer(script, euroc, tmp_path,
+                                                                                        monkeypatch):
+    fetch = script('fetch_euroc')
+    monkeypatch.setattr(fetch, 'open_range', lambda *_: pytest.fail('nothing should be fetched'))
+    room = tmp_path / 'data/euroc/vicon_room'
+    room.mkdir(parents=True)
+    euroc(seq='V1_01_easy', frames=5).joinpath('V1_01_easy').rename(room / 'V1_01_easy')
+    assert fetch.main(['--data-root', str(tmp_path / 'data'), '--sequences', 'V1_01_easy']) == 0
+    assert len(list((tmp_path / 'data/euroc/V1_01_easy/mav0/cam0/data').glob('*.png'))) == 5
 
 
 # ---- the launcher ----
