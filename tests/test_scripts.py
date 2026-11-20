@@ -1,6 +1,7 @@
 import io
 import json
 from pathlib import Path
+import re
 import shutil
 import stat
 import subprocess
@@ -26,6 +27,34 @@ def test_a_run_is_refused_for_an_unknown_setting_or_into_an_existing_directory(s
         script('run').main([*arguments, '--out', str(tmp_path / 'run'), '--set', 'mapping.window_frame=4'])
     with pytest.raises(SystemExit):
         script('run').main([*arguments, '--out', str(tmp_path)])
+
+
+def test_the_configured_depth_model_is_the_checkpoint_make_setup_fetches(root, cfg):
+    fetched = re.search(r'^MODEL \?= (\w+)$', (root / 'Makefile').read_text(), re.M).group(1)
+    assert cfg['model'] == f'thirdparty/da3_weights/{fetched}'
+
+
+def test_the_configured_depth_model_is_the_one_the_papers_runs_use(root, cfg):
+    paper = re.search(r'^WEIGHTS=\$\{WEIGHTS:-(\S+)\}$', (root / 'scripts/paper.sh').read_text(), re.M).group(1)
+    assert cfg['model'] == paper
+
+
+def test_the_depth_model_is_a_checkpoint_directory_of_the_repository_or_a_hugging_face_id(script, tmp_path, monkeypatch):
+    run = script('run')
+    monkeypatch.setattr(run, 'ROOT', tmp_path)
+    base = tmp_path / 'thirdparty/da3_weights/base'
+    base.mkdir(parents=True)
+    assert run.depth_model('thirdparty/da3_weights/base') == run.depth_model(str(base)) == str(base)
+    assert run.depth_model('depth-anything/DA3-LARGE-1.1') == 'depth-anything/DA3-LARGE-1.1'
+    with pytest.raises(FileNotFoundError, match='make weights'):
+        run.depth_model('thirdparty/da3_weights/giant')
+
+
+def test_a_run_without_its_depth_model_stops_before_it_starts(script, euroc, openvins, tmp_path):
+    with pytest.raises(FileNotFoundError, match='make weights'):
+        script('run').main(['--dataset', 'euroc', '--data', str(euroc(frames=5)), '--sequence', 'V1_02_medium',
+                            '--out', str(tmp_path / 'run'), '--rate', '0', '--weights', str(tmp_path / 'missing')])
+    assert not (tmp_path / 'run').exists()
 
 
 def test_a_run_of_the_filter_alone_is_recorded_and_scored_against_the_reference(script, euroc, openvins, tmp_path):

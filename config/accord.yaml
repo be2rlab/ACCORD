@@ -1,5 +1,5 @@
 # The one configuration of Accord. Nothing here is tuned per sequence.
-model: depth-anything/DA3-BASE     # or a checkpoint directory (run --weights)
+model: thirdparty/da3_weights/giant
 device: cuda
 process_res: 504                   # longer image side given to the depth model
 torch_threads: 2

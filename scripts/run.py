@@ -8,6 +8,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src'))
 
 
+def depth_model(name):
+    path = ROOT / name
+    if path.is_dir():
+        return str(path)
+    if name.count('/') == 1 and not name.startswith(('/', '.')):
+        return name
+    raise FileNotFoundError(f'no depth model at {path}: `make weights` fetches DA3-Giant into thirdparty/da3_weights/giant, '
+                            '`make weights MODEL=base` or `MODEL=large` the others')
+
+
 def main(argv=None):
     import numpy as np
     import yaml
@@ -50,6 +60,8 @@ def main(argv=None):
         if not isinstance(target, dict) or name not in target:
             p.error(f'unknown setting {key!r}')
         target[name] = yaml.safe_load(raw)
+    if cfg['mapping']['enabled']:          # the filter alone needs no depth model
+        cfg['model'] = depth_model(cfg['model'])
 
     ds = open_dataset(a.dataset, a.data, a.sequence)
     start, end = interval(ds, a.start_offset, a.seconds)

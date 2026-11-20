@@ -29,7 +29,7 @@ openvins:
 binding:
 	scripts/docker.sh native/build.sh
 
-MODEL ?= base
+MODEL ?= giant
 weights:
 	scripts/fetch_da3_weights.sh $(MODEL)
 
