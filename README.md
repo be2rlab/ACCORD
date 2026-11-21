@@ -37,8 +37,16 @@ make weights MODEL=base         # a smaller model for a smaller GPU (Default Gia
 | Oxford Spires | `make spires SEQS='cc03 cc05'` | `cc02`, `cc03`, `cc05` |
 | the phone rig (Note 9 and iPhone) | download it, then `make phone_rig RELEASE=<its folder>` | `vio01` ... `vio13`, as `rig_android` and `rig_iphone` (the Note 9 has no `vio03`) |
 | RealSense bag | `scripts/convert_realsense.py` (its docstring) | your recordings, rig in `config/realsense` |
+| OrbbecViewer v2 bag (MJPG RGB + IMU) | `scripts/convert_orbbec.py` (its docstring) | your recordings, factory rig in `config/orbbec` |
 | iPhone (Stray Scanner) | `python3 scripts/convert_iphone.py data/Iphone/ID` (`--rig`, `--turn` for another phone or one held in landscape) | your recordings, rig in `config/iphone` |
 | your own camera + IMU | ASL layout in `data/custom/SEQ/mav0` (`cam0/data/<ns>.jpg`, `imu0/data.csv`) | rig in `config/phone` |
+
+For an OrbbecViewer SDK v2.10.6 recording, install `rosbags` alongside NumPy, OpenCV and PyYAML, then run
+`python3 scripts/convert_orbbec.py --bag 'data/recording.bag' --sequence walk01`.
+The converter extracts the factory rig, undistorts MJPG RGB using all eight coefficients, and writes
+`data/orbbec/walk01/mav0` and a timing report, `conversion.json`. Existing, different rig files are refused.
+`config/orbbec` describes the converted 1280×720 Gemini 335Lg recording; its IMU noise and time shift are factory
+starting values, not a Kalibr/Allan result. Raw Viewer images must not be replayed with this undistorted rig.
 
 ORI, Hilti-Oxford and Oxford Spires come with a laser scan; `make` converts them and builds the reference the map is scored
 against. The phone rig's reference is a LiDAR phone's RTAB-Map graph and map, which reach only about 3.5 m from its track:
@@ -59,6 +67,7 @@ viewer beside the run: open http://localhost:9090/?url=rerun%2Bhttp%3A%2F%2F127.
 ./accord run vio07 --dataset rig_iphone --viz                   # the phone rig: the iPhone's recording of walk vio07
 ./accord run vio07 --dataset rig_android --viz                  #                the Note 9's
 ./accord run NAME --dataset realsense --viz                     # a converted RealSense bag
+./accord run walk01 --dataset orbbec --viz                      # a converted OrbbecViewer bag
 ./accord run NAME --dataset iphone --viz                        # a converted iPhone recording
 ./accord run NAME --dataset custom --viz                        # your own recording
 ```

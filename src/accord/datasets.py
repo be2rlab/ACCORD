@@ -202,6 +202,12 @@ class RealSense(Custom):
     rig = 'realsense'
 
 
+class Orbbec(Custom):
+    """Undistorted OrbbecViewer RGB + IMU (scripts/convert_orbbec.py), factory rig, no reference."""
+    name = 'orbbec'
+    rig = 'orbbec'
+
+
 class Iphone(Custom):
     """An iPhone recording (scripts/convert_iphone.py), no reference; the camera is config/iphone's."""
     name = 'iphone'
@@ -437,6 +443,8 @@ def open_dataset(name, root, seq, reference=None):
         return Hilti(root, seq)
     if name == 'realsense':
         return RealSense(root, seq)
+    if name == 'orbbec':
+        return Orbbec(root, seq)
     if name == 'spires':
         return Spires(root, seq)
     if name == 'iphone':
@@ -445,4 +453,4 @@ def open_dataset(name, root, seq, reference=None):
         return PhoneRigAndroid(root, seq)
     if name == 'rig_iphone':
         return PhoneRigIphone(root, seq)
-    raise ValueError('dataset must be euroc, ori, custom, tumvi, hilti, realsense, spires, iphone, rig_android or rig_iphone')
+    raise ValueError('dataset must be euroc, ori, custom, tumvi, hilti, realsense, orbbec, spires, iphone, rig_android or rig_iphone')

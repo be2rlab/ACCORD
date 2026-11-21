@@ -12,6 +12,7 @@ rigs:                              # the filter's configuration per dataset
   tumvi: config/tumvi/estimator_config.yaml
   hilti: config/hilti/estimator_config.yaml
   realsense: config/realsense/estimator_config.yaml
+  orbbec: config/orbbec/estimator_config.yaml
   spires: config/spires/estimator_config.yaml
   iphone: config/iphone/estimator_config.yaml
   rig_android: config/rig_android/estimator_config.yaml    # the phone rig dataset

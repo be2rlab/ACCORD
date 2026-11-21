@@ -47,7 +47,7 @@ case "${1:-}" in
   test)  ACCORD_GPUS=none in_image python3 -m pytest -q "${@:2}" ;;
   shell) in_image ;;
   *) cat >&2 <<'USAGE'
-./accord run SEQUENCE [--dataset euroc|tumvi|ori|hilti|spires|rig_android|rig_iphone|realsense|iphone|custom] [--out RUN] [--viz]
+./accord run SEQUENCE [--dataset euroc|tumvi|ori|hilti|spires|rig_android|rig_iphone|realsense|orbbec|iphone|custom] [--out RUN] [--viz]
                      [options of scripts/run.py: --weights, --rate, --set key=value, --poses, --no-map, ...]
 ./accord view RUN [options of scripts/view_run.py]
 ./accord map RUN [options of scripts/export_map.py]

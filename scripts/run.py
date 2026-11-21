@@ -22,7 +22,7 @@ def main(argv=None):
     import numpy as np
     import yaml
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--dataset', required=True, choices=('euroc', 'ori', 'custom', 'tumvi', 'hilti', 'realsense', 'spires', 'iphone',
+    p.add_argument('--dataset', required=True, choices=('euroc', 'ori', 'custom', 'tumvi', 'hilti', 'realsense', 'orbbec', 'spires', 'iphone',
                                                        'rig_android', 'rig_iphone'))
     p.add_argument('--data', type=Path, required=True, help='the directory that holds the sequences')
     p.add_argument('--sequence', required=True)
