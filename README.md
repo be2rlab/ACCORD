@@ -20,10 +20,24 @@ Linux, Docker with the [NVIDIA container toolkit](https://docs.nvidia.com/datace
 an NVIDIA GPU (6 GB for DA3-Base, 24 GB for DA3-Giant), about 30 GB of disk, and `git`, `make` and Python 3 on the host.
 Nothing else is installed on the host: everything runs in the image.
 
+Before building, choose CUDA and PyTorch versions compatible with your GPU and NVIDIA driver. Check the
+[PyTorch installation matrix](https://pytorch.org/get-started/previous-versions/) and
+[CUDA GPU compute capabilities](https://developer.nvidia.com/cuda/gpus). The defaults are CUDA `12.6.3` and PyTorch
+`2.13.0`. The PyTorch wheel index is derived from CUDA major.minor (`12.9.2` → `cu129`); wheels for the selected
+combination must exist. Pip selects a torchvision version compatible with the requested PyTorch version.
+
 ```bash
 git clone --recursive https://github.com/be2rlab/ACCORD.git && cd ACCORD
 make setup                      # image, OpenVINS, its Python binding, DA3-Giant weights, XFeat (about an hour, once)
 make weights MODEL=base         # a smaller model for a smaller GPU (Default Giant)
+```
+
+`make image` and `make setup` accept `CUDA_VERSION` and `TORCH_VERSION`. Omit the variables to use the defaults above.
+For example, select CUDA `12.9.2` / `cu129` for an RTX 5090:
+
+```bash
+make image CUDA_VERSION=12.9.2 TORCH_VERSION=2.13.0  # both images only
+make setup CUDA_VERSION=12.9.2 TORCH_VERSION=2.13.0  # full setup, including both images
 ```
 
 ## Data

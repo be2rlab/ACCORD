@@ -1,12 +1,15 @@
 # One-time setup and datasets. Day-to-day use is ./accord.
 SHELL := /bin/bash
 DATA  ?= data
+CUDA_VERSION ?= 12.6.3
+TORCH_VERSION ?= 2.13.0
 IN_IMAGE := ACCORD_GPUS=none scripts/docker.sh
 
 .PHONY: help setup image openvins binding weights xfeat euroc tumvi ori hilti spires phone_rig test clean
 
 help:
 	@echo "make setup        image, OpenVINS, its binding, DA3 weights, XFeat (about an hour)"
+	@echo "make image        both images [CUDA_VERSION=12.6.3 TORCH_VERSION=2.13.0; also accepted by setup]"
 	@echo "make weights      a Depth Anything 3 checkpoint [MODEL=base|large|giant]"
 	@echo "make euroc        EuRoC into data/euroc [SEQS='V1_01_easy V1_02_medium']"
 	@echo "make tumvi        TUM-VI rooms into data/tumvi [SEQS='room1 room2']"
@@ -19,7 +22,10 @@ help:
 setup: image openvins binding weights xfeat
 
 image:
-	docker build -f docker/Dockerfile.base -t accord/standalone-gpu:latest docker/
+	docker build -f docker/Dockerfile.base \
+	  --build-arg CUDA_VERSION="$(CUDA_VERSION)" \
+	  --build-arg TORCH_VERSION="$(TORCH_VERSION)" \
+	  -t accord/standalone-gpu:latest docker/
 	docker build -f docker/Dockerfile.dense -t accord/dense-gpu:latest docker/
 
 openvins:
