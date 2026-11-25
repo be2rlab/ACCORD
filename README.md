@@ -116,6 +116,42 @@ parameters also include `config`, `model`, `output_dir`, `odometry_topic`, `poin
 Runs are written under `runs/ros2_<timestamp>` by default. ROS publishes the odometry online; when mapping is enabled,
 the saved submaps can be fused afterward with `python3 scripts/export_map.py --run runs/ros2_<timestamp>`.
 
+### RViz2 in a separate image
+
+On a Linux host with an X11 session (or XWayland), build the optional RViz2 image separately:
+
+```bash
+make rviz2-image
+```
+
+Start ACCORD with host networking, then run the node and play the bag as usual:
+
+```bash
+ACCORD_DOCKER_ARGS="--network host" ./accord shell
+```
+
+In another host terminal, launch RViz2 with the same `ROS_DOMAIN_ID` as ACCORD (default `0`):
+
+```bash
+docker run --rm -it --network host --ipc host \
+  --user "$(id -u):$(id -g)" -e HOME=/tmp \
+  -e DISPLAY -e XAUTHORITY=/tmp/.Xauthority \
+  -e ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}" \
+  -e LIBGL_ALWAYS_SOFTWARE=1 \
+  -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+  -v "${XAUTHORITY:-$HOME/.Xauthority}:/tmp/.Xauthority:ro" \
+  accord/rviz2:humble
+```
+
+The host X11 display and its Xauthority file must exist and be readable; Docker Desktop, remote displays and native
+Wayland may require a different GUI setup. Software rendering avoids needing to expose the GPU but can be slow.
+The ACCORD container also uses `--ipc host`; sharing IPC lets the default DDS shared-memory transport deliver data
+between the containers. Both containers therefore share the host's IPC namespace.
+In RViz2 set **Fixed Frame** to `map`, add a **PointCloud2** display for `/accord/points`, and set its reliability
+to **Best Effort**. The point cloud is published only when mapping is enabled and a live map is available. If topics
+are not visible, check the domain ID and DDS discovery configuration in both containers. While the node is running,
+the latest available cloud is republished periodically for late subscribers.
+
 
 ## Scoring and ablation
 
