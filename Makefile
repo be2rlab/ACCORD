@@ -19,8 +19,8 @@ help:
 setup: image openvins binding weights xfeat
 
 image:
-	docker build -f docker/Dockerfile.base -t accord/standalone-gpu:latest docker/
-	docker build -f docker/Dockerfile.dense -t accord/dense-gpu:latest docker/
+	docker build -f docker/Dockerfile.base -t accord/standalone-gpu:latest .
+	docker build -f docker/Dockerfile.dense -t accord/dense-gpu:latest .
 
 openvins:
 	git submodule update --init thirdparty/open_vins thirdparty/Depth-Anything-3

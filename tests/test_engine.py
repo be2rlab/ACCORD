@@ -59,9 +59,10 @@ def start(cfg, root, openvins, tmp_path, monkeypatch):
     monkeypatch.setattr(engine_module, 'Worker', Vision)
     cfg['shutdown_drain_s'] = 0.
 
-    def make(**mapping):
+    def make(pose_callback=None, **mapping):
         cfg['mapping'].update(mapping)
-        return Engine(cfg, root / cfg['rigs']['euroc'], tmp_path / 'run', meta=dict(sequence='fake'))
+        return Engine(cfg, root / cfg['rigs']['euroc'], tmp_path / 'run', meta=dict(sequence='fake'),
+                      pose_callback=pose_callback)
     return make
 
 
@@ -110,6 +111,23 @@ def test_a_run_without_a_map_writes_every_pose_of_the_filter_and_its_status(star
     assert run['first_sensor_time'] == 1. and run['last_sensor_time'] == pytest.approx(1.35)
     assert run['pose_age_p50_s'] >= 0. and run['config']['mapping']['enabled'] is False
     assert (engine.out / 'filter_config/estimator.yaml').is_file() and engine.vision is None
+
+
+def test_pose_callback_receives_the_live_body_camera_and_corrected_poses(start):
+    received = []
+    engine = start(pose_callback=lambda *poses: received.append(poses), enabled=False)
+    drive(engine, 8)
+    engine.close()
+
+    assert len(received) == 6
+    trajectory = stream(engine, 'trajectory')
+    map_trajectory = stream(engine, 'map_trajectory')
+    np.testing.assert_allclose([pose[0] for pose in received], trajectory[:, 0])
+    for index, (_, body, camera, map_body, map_camera) in enumerate(received):
+        np.testing.assert_allclose(body, map_body)
+        np.testing.assert_allclose(camera, map_camera)
+        np.testing.assert_allclose(body[:3, 3], trajectory[index, 1:4])
+        np.testing.assert_allclose(map_body[:3, 3], map_trajectory[index, 1:4])
 
 
 def test_a_run_in_which_the_filter_never_starts_has_failed(start):

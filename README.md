@@ -75,6 +75,47 @@ The depth model is the paper's, DA3-Giant; add `--weights thirdparty/da3_weights
 ./accord score runs/V1_01_easy
 ```
 
+## ROS 2 wrapper
+
+The ROS 2 Humble wrapper source in `ros2/accord_ros` is copied into the Docker image and installed during `make image`
+(also included in `make setup`). It feeds one camera and one IMU stream into the online engine, subscribes to
+`sensor_msgs/Image` and `sensor_msgs/Imu`, publishes corrected body odometry on `/accord/odometry`, and broadcasts
+`map -> base_link -> camera_link`. When mapping is enabled, it also publishes the current fused active submaps as a
+coloured `sensor_msgs/PointCloud2` on `/accord/points` every `pointcloud_publish_period_s` (default 1 s), using the
+latest available live map. This is the mapper's bounded active map, not the complete final export.
+Sensor timestamps must be in the same clock, increase monotonically, and the IMU must reach or pass each image timestamp.
+The image resolution, camera calibration, IMU calibration and units must match the selected ACCORD rig. ROS `Image` is
+converted to grayscale `mono8` for tracking and depth inference, and to `rgb8` to colour the map. A monochrome input
+produces a grayscale map.
+
+Build the image and run the installed node in the container:
+
+```bash
+make image
+./accord shell
+ros2 run accord_ros accord_node --ros-args \
+  -p accord_root:=/workspace \
+  -p rig_config:=config/phone/estimator_config.yaml \
+  -p image_topic:=/cam0/image_raw \
+  -p imu_topic:=/imu0
+```
+
+```bash
+ros2 run accord_ros accord_node --ros-args \
+  -p accord_root:=/workspace \
+  -p model:=thirdparty/da3_weights/base \
+  -p rig_config:=config/realsense/estimator_config.yaml \
+  -p image_topic:=/camera/camera/color/image_raw \
+  -p imu_topic:=/camera/camera/imu
+```
+
+Set `rig_config` to an estimator config whose referenced IMU and camera calibration files match your hardware. If you
+only need visual-inertial odometry and do not want to load Depth Anything 3, add `-p mapping_enabled:=false`. Useful
+parameters also include `config`, `model`, `output_dir`, `odometry_topic`, `pointcloud_topic`, `pointcloud_publish_period_s`,
+`world_frame`, `base_frame`, and `camera_frame`.
+Runs are written under `runs/ros2_<timestamp>` by default. ROS publishes the odometry online; when mapping is enabled,
+the saved submaps can be fused afterward with `python3 scripts/export_map.py --run runs/ros2_<timestamp>`.
+
 
 ## Scoring and ablation
 
