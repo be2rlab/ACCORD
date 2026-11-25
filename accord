@@ -10,7 +10,7 @@ score() {  # run directory
 view() {
   local web="${ACCORD_WEB_PORT:-9090}" grpc="${ACCORD_GRPC_PORT:-9876}"
   local args=(scripts/view_run.py --run "$1" --web-port "$web" --grpc-port "$grpc" "${@:2}")
-  if python3 -c 'import rerun, scipy; assert tuple(map(int, rerun.__version__.split(".")[:2])) >= (0, 23)' 2>/dev/null; then
+  if python3 -c 'import cv2, numpy, rerun, scipy; assert tuple(map(int, rerun.__version__.split(".")[:2])) >= (0, 23)' 2>/dev/null; then
     exec python3 "${args[@]}"
   fi
   ACCORD_GPUS=none ACCORD_DOCKER_ARGS="-p 127.0.0.1:$web:$web -p 127.0.0.1:$grpc:$grpc" exec scripts/docker.sh python3 "${args[@]}"
