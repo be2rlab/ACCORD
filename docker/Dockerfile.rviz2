@@ -5,4 +5,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 ENV QT_X11_NO_MITSHM=1
-CMD ["rviz2"]
+
+COPY config/rviz2/accord.rviz /opt/accord/accord.rviz
+CMD ["rviz2", "-d", "/opt/accord/accord.rviz"]

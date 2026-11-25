@@ -77,81 +77,108 @@ The depth model is the paper's, DA3-Giant; add `--weights thirdparty/da3_weights
 
 ## ROS 2 wrapper
 
-The ROS 2 Humble wrapper source in `ros2/accord_ros` is copied into the Docker image and installed during `make image`
-(also included in `make setup`). It feeds one camera and one IMU stream into the online engine, subscribes to
-`sensor_msgs/Image` and `sensor_msgs/Imu`, publishes corrected body odometry on `/accord/odometry`, and broadcasts
-`map -> base_link -> camera_link`. When mapping is enabled, it also publishes the current fused active submaps as a
-coloured `sensor_msgs/PointCloud2` on `/accord/points` every `pointcloud_publish_period_s` (default 1 s), using the
-latest available live map. This is the mapper's bounded active map, not the complete final export.
-Sensor timestamps must be in the same clock, increase monotonically, and the IMU must reach or pass each image timestamp.
-The image resolution, camera calibration, IMU calibration and units must match the selected ACCORD rig. ROS `Image` is
-converted to grayscale `mono8` for tracking and depth inference, and to `rgb8` to colour the map. A monochrome input
-produces a grayscale map.
+The ROS 2 Humble wrapper in [ros2/accord_ros](ros2/accord_ros) connects one camera and one IMU to the online engine.
+It subscribes to `sensor_msgs/msg/Image` and `sensor_msgs/msg/Imu` and publishes:
 
-Build the image and run the installed node in the container:
+| Output | Default | Description |
+|---|---|---|
+| `nav_msgs/msg/Odometry` | `/accord/odometry` | Corrected body pose |
+| TF | `map -> base_link -> camera_link` | World, body and camera frames |
+| `sensor_msgs/msg/PointCloud2` | `/accord/points` | Coloured live map, when mapping is enabled |
+
+The point cloud is the mapper's bounded active map, not the complete final export. It is republished every
+`pointcloud_publish_period_s` (default 1 s), including for late subscribers. Images are converted to `mono8` for
+tracking and depth inference and to `rgb8` for map colour; monochrome input produces a grayscale map.
+
+### Prepare and run the node
+
+Complete [Setup](#setup) first. `make setup` builds and installs the wrapper in the ACCORD image; after changing wrapper
+source, rebuild with `make image`. Fetch another depth model with `make weights MODEL=base` if needed.
+
+Camera and IMU timestamps must share a clock and increase monotonically within each stream; IMU samples must reach or
+pass each image timestamp. Select a rig whose camera and IMU calibration, extrinsics, image resolution and units match
+your hardware. In particular, [the RealSense rig](config/realsense/estimator_config.yaml) is a calibration for a
+specific device and must not be assumed valid for every RealSense camera.
+
+For example, open an ACCORD container and run the node for a RealSense colour camera and combined IMU:
 
 ```bash
-make image
-./accord shell
-ros2 run accord_ros accord_node --ros-args \
-  -p accord_root:=/workspace \
-  -p rig_config:=config/phone/estimator_config.yaml \
-  -p image_topic:=/cam0/image_raw \
-  -p imu_topic:=/imu0
+ACCORD_DOCKER_ARGS="--network host -e ROS_DOMAIN_ID=0" ./accord shell
 ```
 
+Inside the container:
+
 ```bash
 ros2 run accord_ros accord_node --ros-args \
   -p accord_root:=/workspace \
-  -p model:=thirdparty/da3_weights/base \
   -p rig_config:=config/realsense/estimator_config.yaml \
   -p image_topic:=/camera/camera/color/image_raw \
-  -p imu_topic:=/camera/camera/imu
+  -p imu_topic:=/camera/camera/imu \
+  -p model:=thirdparty/da3_weights/base
 ```
 
-Set `rig_config` to an estimator config whose referenced IMU and camera calibration files match your hardware. If you
-only need visual-inertial odometry and do not want to load Depth Anything 3, add `-p mapping_enabled:=false`. Useful
-parameters also include `config`, `model`, `output_dir`, `odometry_topic`, `pointcloud_topic`, `pointcloud_publish_period_s`,
-`world_frame`, `base_frame`, and `camera_frame`.
-Runs are written under `runs/ros2_<timestamp>` by default. ROS publishes the odometry online; when mapping is enabled,
-the saved submaps can be fused afterward with `python3 scripts/export_map.py --run runs/ros2_<timestamp>`.
+Use your own rig and topic names as appropriate. Omit `model` to use the model in
+[config/accord.yaml](config/accord.yaml), DA3-Giant by default, or set it to `thirdparty/da3_weights/giant`.
+Add `-p mapping_enabled:=false` for visual-inertial odometry without loading the depth model or publishing the cloud.
+Other parameters include `config`, `output_dir`, `odometry_topic`, `pointcloud_topic`,
+`pointcloud_publish_period_s`, `world_frame`, `base_frame` and `camera_frame`.
 
-### RViz2 in a separate image
+Runs are saved to `runs/ros2_<timestamp>` by default. After stopping the node, export the saved submaps on the host with
+`./accord map runs/ros2_<timestamp>`, producing `map.ply` in the run directory.
 
-On a Linux host with an X11 session (or XWayland), build the optional RViz2 image separately:
+### Play a ROS 2 bag
+
+Start the node before playback. In another host terminal, open a second container in the same ROS domain:
+
+```bash
+ACCORD_GPUS=none ACCORD_DOCKER_ARGS="--network host -e ROS_DOMAIN_ID=0" ./accord shell
+```
+
+Inside that container, for example:
+
+```bash
+ros2 bag info data/ros2bags/beerlab
+ros2 bag play data/ros2bags/beerlab --topics \
+  /camera/camera/color/image_raw /camera/camera/imu
+```
+
+Replace the bag path and topic names with those in your recording. The example plays only the two input topics, so
+other recorded message types are not required for playback. The bag must be accessible under the mounted repository;
+check that its calibration and image resolution match the chosen rig.
+
+### Visualize in RViz2
+
+![ACCORD point cloud in RViz2](docs/accord-rviz2.png)
+
+On a Linux host with X11 or XWayland, build the optional RViz2 image:
 
 ```bash
 make rviz2-image
 ```
 
-Start ACCORD with host networking, then run the node and play the bag as usual:
-
-```bash
-ACCORD_DOCKER_ARGS="--network host" ./accord shell
-```
-
-In another host terminal, launch RViz2 with the same `ROS_DOMAIN_ID` as ACCORD (default `0`):
+The image copies [config/rviz2/accord.rviz](config/rviz2/accord.rviz) at build time and opens it by default. In another
+host terminal, launch RViz2 in the same `ROS_DOMAIN_ID` as the node and bag player:
 
 ```bash
 docker run --rm -it --network host --ipc host \
   --user "$(id -u):$(id -g)" -e HOME=/tmp \
   -e DISPLAY -e XAUTHORITY=/tmp/.Xauthority \
-  -e ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}" \
+  -e ROS_DOMAIN_ID=0 \
   -e LIBGL_ALWAYS_SOFTWARE=1 \
   -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
   -v "${XAUTHORITY:-$HOME/.Xauthority}:/tmp/.Xauthority:ro" \
   accord/rviz2:humble
 ```
 
-The host X11 display and its Xauthority file must exist and be readable; Docker Desktop, remote displays and native
-Wayland may require a different GUI setup. Software rendering avoids needing to expose the GPU but can be slow.
-The ACCORD container also uses `--ipc host`; sharing IPC lets the default DDS shared-memory transport deliver data
-between the containers. Both containers therefore share the host's IPC namespace.
-In RViz2 set **Fixed Frame** to `map`, add a **PointCloud2** display for `/accord/points`, and set its reliability
-to **Best Effort**. The point cloud is published only when mapping is enabled and a live map is available. If topics
-are not visible, check the domain ID and DDS discovery configuration in both containers. While the node is running,
-the latest available cloud is republished periodically for late subscribers.
+The host X11 display and Xauthority file must exist and be readable; Docker Desktop, remote displays and native Wayland
+may need a different GUI setup. Software rendering avoids exposing the GPU but can be slow. The ACCORD containers use
+`--ipc host` automatically; the RViz2 container also needs it for the default DDS shared-memory transport. All
+containers above use host networking. If changing the domain ID, set the same value in every container.
 
+The saved configuration uses **Fixed Frame** `map`, a **PointCloud2** display on `/accord/points`, **Best Effort**
+reliability and the **RGB8** colour transformer. Adapt these if you change the node's frame or topic parameters.
+The cloud appears only after mapping produces a live map. If it does not appear, check the node logs, domain ID, DDS
+discovery, IPC and the PointCloud2 QoS.
 
 ## Scoring and ablation
 
