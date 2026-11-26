@@ -27,11 +27,13 @@ def blend(start, target, fraction):
 
 
 class Engine:
-    def __init__(self, cfg, rig, out, meta=None, poses=None):
+    def __init__(self, cfg, rig, out, meta=None, poses=None, pose_callback=None):
         """``poses``: (times s, camera-to-world 4x4) of a reference, published and mapped on in place of the filter's;
-        the filter still runs and gives the camera's pose on the body."""
+        the filter still runs and gives the camera's pose on the body. ``pose_callback`` receives
+        ``(t, body_pose, camera_pose, map_body_pose, map_camera_pose)`` for each pose."""
         self.cfg, self.out, self.meta = cfg, Path(out).resolve(), dict(meta or {})
         self.reference = None if poses is None else (np.asarray(poses[0], float), np.asarray(poses[1], float))
+        self.pose_callback = pose_callback
         self.meta['reference_poses'] = self.reference is not None
         self.out.mkdir(parents=True, exist_ok=False)
         self.status, self.error, self.opened = 'starting', None, time.monotonic()
@@ -98,7 +100,11 @@ class Engine:
             self.write_status()
         self.streams['trajectory'].write(tum_line(t, body))
         self.streams['camera_trajectory'].write(tum_line(t, camera))
-        self.streams['map_trajectory'].write(tum_line(t, self.active_correction(t) @ body))
+        correction = self.active_correction(t)
+        map_body, map_camera = correction @ body, correction @ camera
+        self.streams['map_trajectory'].write(tum_line(t, map_body))
+        if self.pose_callback is not None:
+            self.pose_callback(t, body, camera, map_body, map_camera)
         self.ages.append(time.monotonic() - packet['arrival_wall'])
         mapping, stamp = self.cfg['mapping'], round(t * 1e9)
         if self.vision is None or self.vision_failed or stamp != round(packet['t'] * 1e9):

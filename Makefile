@@ -3,10 +3,11 @@ SHELL := /bin/bash
 DATA  ?= data
 IN_IMAGE := ACCORD_GPUS=none scripts/docker.sh
 
-.PHONY: help setup image openvins binding weights xfeat euroc tumvi ori hilti spires phone_rig test clean
+.PHONY: help setup image rviz2-image openvins binding weights xfeat euroc tumvi ori hilti spires phone_rig test clean
 
 help:
 	@echo "make setup        image, OpenVINS, its binding, DA3 weights, XFeat (about an hour)"
+	@echo "make rviz2-image  build the optional ROS 2 Humble RViz2 image"
 	@echo "make weights      a Depth Anything 3 checkpoint [MODEL=base|large|giant]"
 	@echo "make euroc        EuRoC into data/euroc [SEQS='V1_01_easy V1_02_medium']"
 	@echo "make tumvi        TUM-VI rooms into data/tumvi [SEQS='room1 room2']"
@@ -19,8 +20,11 @@ help:
 setup: image openvins binding weights xfeat
 
 image:
-	docker build -f docker/Dockerfile.base -t accord/standalone-gpu:latest docker/
-	docker build -f docker/Dockerfile.dense -t accord/dense-gpu:latest docker/
+	docker build -f docker/Dockerfile.base -t accord/standalone-gpu:latest .
+	docker build -f docker/Dockerfile.dense -t accord/dense-gpu:latest .
+
+rviz2-image:
+	docker build -f docker/Dockerfile.rviz2 -t accord/rviz2:humble .
 
 openvins:
 	git submodule update --init thirdparty/open_vins thirdparty/Depth-Anything-3

@@ -14,7 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       build-essential cmake git unzip \
       libeigen3-dev libopencv-dev libceres-dev libsuitesparse-dev libboost-all-dev \
       python3-pip python3-colcon-common-extensions \
-      ros-humble-ros-base ros-humble-cv-bridge ros-humble-image-transport && \
+      ros-humble-ros-base ros-humble-cv-bridge ros-humble-image-transport \
+      ros-humble-nav-msgs ros-humble-tf2-ros && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip3 install --no-cache-dir -U pip setuptools wheel
@@ -38,10 +39,20 @@ RUN pip3 install --no-cache-dir \
       pycolmap "moviepy==1.0.3" trimesh plyfile tqdm \
       addict matplotlib scipy evo
 
+COPY ros2/accord_ros /opt/accord_ros_ws/src/accord_ros
+RUN source /opt/ros/humble/setup.bash && \
+    colcon --log-base /tmp/accord_ros_log build \
+      --base-paths /opt/accord_ros_ws/src/accord_ros \
+      --build-base /tmp/accord_ros_build \
+      --install-base /opt/accord_ros_ws/install && \
+    rm -rf /tmp/accord_ros_build /tmp/accord_ros_log
+
 ENV PYTHONPATH=/workspace/src:/workspace/thirdparty/Depth-Anything-3/src
 ENV HF_HOME=/workspace/thirdparty/da3_weights/.hf_home
 
 RUN echo 'source /opt/ros/humble/setup.bash' >> /etc/bash.bashrc && \
+    echo '[ -f /opt/accord_ros_ws/install/setup.bash ] && source /opt/accord_ros_ws/install/setup.bash' \
+      >> /etc/bash.bashrc && \
     echo '[ -f /workspace/thirdparty/open_vins/install/setup.bash ] && source /workspace/thirdparty/open_vins/install/setup.bash' \
       >> /etc/bash.bashrc
 
